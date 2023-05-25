@@ -1,0 +1,44 @@
+<div class="register-form">
+    <h1 style = "font-size:40px; font-weight: bold; ">In order to register your new Reci acount please fill the boxes below</h1>
+    <form [formGroup]="createForm" style="margin-left:5%;"class="form">
+        
+        <h3 style = "margin-top:40px; font-size:20px; font-weight: bold; ">Enter your profile name (The name other people will see)</h3>
+        <mat-form-field appearance="outline">
+            
+            <mat-label>
+                Profile name 
+            </mat-label>
+            <input matInput placeholder="Name" formControlName="name" />
+        </mat-form-field>
+        <h3 style = "margin-top:40px; font-size:20px; font-weight: bold; ">Enter your user name (The name of your acount)</h3>
+        <mat-form-field appearance="outline">
+            
+            <mat-label>
+                User name 
+            </mat-label>
+            <input matInput placeholder="Name" formControlName="username" />
+        </mat-form-field>
+        <h3 style = "margin-top:40px; font-size:20px; font-weight: bold; ">Enter your e-mail</h3>
+        <mat-form-field appearance="outline">
+            
+            <mat-label>
+                E-mail
+            </mat-label>
+            <input matInput placeholder="Name" formControlName="email" />
+        </mat-form-field>
+        <h3 style = "margin-top:40px; font-size:20px; font-weight: bold; ">Enter your password</h3>
+        <mat-form-field appearance="outline">
+            
+            <mat-label>
+                Password
+            </mat-label>
+            <input matInput placeholder="Name" formControlName="password" />
+        </mat-form-field>
+
+        
+    </form>
+    <button style="margin-left: 5%;" mat-raised-button (click)="register()">
+        CONFIRM SIGN UP
+    </button>
+</div>
+

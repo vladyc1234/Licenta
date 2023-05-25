@@ -1,0 +1,29 @@
+
+		<div class="form-section">
+		    <h1 style="font-size:50px; font-weight: bold;">Welcome to Reci-Book</h1>
+		    <form [formGroup]="loginForm" class="form">
+		        <mat-form-field appearance="outline">
+		            <mat-label>
+		                Email
+		            </mat-label>
+		            <input matInput placeholder="Email" formControlName="email" />
+		        </mat-form-field>
+		        <mat-form-field style="margin-left:5px;"appearance="outline">
+		            <mat-label>
+		                Password
+		            </mat-label>
+		            <input matInput placeholder="Password" formControlName="password" />
+		        </mat-form-field>
+		    </form>
+
+		    <button mat-raised-button (click)="login()">
+		        LOGIN
+		    </button>
+
+		    <h4 style="font-size:15px; font-weight: bold; margin-top: 10px;">If you do not have a Reci acount, register now!</h4>
+		    <button mat-raised-button routerLink="/register-user">
+		        SIGN UP
+		    </button>
+
+		</div>
+

@@ -1,0 +1,22 @@
+async geocodeAddress() {
+    this.addressVector = [];
+    const idUser = localStorage.getItem('idUser') || '0';
+    let contracts: any = await this.locationService.GetAllContractsById(idUser).toPromise
+    for(let i = 0; i < contracts.length; i++)
+      {
+        let locations: any = await this.locationService.GetAllLocationsById(contracts[i].id)
+        for(let j = 0; j < locations.length; j++)
+        {
+          let url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + locations[j].address + '%' + locations[j].city + '&key=AIzaSyAt6xg7q7ZAivgGRE6oOZKLjjZir-vdyMA'; 
+          let result:any = await this.http.get(url).toPromise()
+              .catch((error)=>{
+                })
+          let latitude = result['results'][0]['geometry']['location']['lat'];
+          let longitude = result['results'][0]['geometry']['location']['lng'];
+          let location: Array<number[]> = [];
+          location.push([latitude, longitude]);
+          this.addressVector.push({idContract: contracts[i].id, location: location, value: contracts[i].value});
+
+        }
+      }
+  }

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="scss/main.scss">
+    <link rel="stylesheet" href="scss/animate.scss">
+
+    <title>more</title>
+    <style>
+    .jumbotron {width: 100%;height: 250px;}
+        .jumbotron h2 {padding-bottom: 0;}
+    </style>
+</head>
+
+<body>
+    <header class="header bg">
+        <div class="container text-white">
+            <div class="row">
+                <div class="col-sm-4 col-12 align-self-center box-1 text-center">
+                    <a class="navbar-brand" href="/home"><img alt="RECI-BOOK"></a>
+                </div>
+            </div>
+            <!--/row-->
+        </div>
+        <!--container-->
+    </header>
+    <span class="position-absolute trigger"><!-- hidden trigger to apply 'stuck' styles --></span>
+    <nav class="navbar navbar-expand-sm sticky-top navbar-dark">
+        <div class="container">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar1">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+            <div class="collapse navbar-collapse" id="navbar1">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/home">Home</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" routerLink="/team-search">Teams</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--container end-->
+    </nav>
+    <!--Section-1-->
+    <section class="section-1">
+        <div class="jumbotron d-flex align-items-center">
+            <div class="gradient"></div>
+            <div class="container-fluid content">
+                
+            </div>
+            <!--container-fluid end-->
+        </div>
+    </section>
+    
+    <!-- About Section Start -->
+    <div id="about-us">
+        <div class="container">
+			<div class="grid-about-us">
+                <div class="grid-search">
+					<h2>Add Contract</h2>
+					<form [formGroup]="addForm" class="form">
+                        <div class="grid-search" style="width: 100%;">
+                        <mat-form-field appearance="outline">
+                            <mat-label>
+                                Introduce Start-Date 
+                            </mat-label>
+                            <input matInput placeholder="YYYY-MM-DD" formControlName="startDate" />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>
+                                Introduce Finish-Date 
+                            </mat-label>
+                            <input matInput placeholder="YYYY-MM-DD" formControlName="finishDate" />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>
+                                Introduce the Value
+                            </mat-label>
+                            <input matInput placeholder="Value" formControlName="value" />
+                        </mat-form-field>
+                        <button style="height:63px; width:50%;" mat-raised-button (click)="addContract()">
+                            Add Contract
+                        </button>
+                        </div>
+                    </form>
+				</div>
+				<div class="Recipes-List">
+					<div class="example-container mat-elevation-z8">
+                        <mat-table #table [dataSource]="dataSource">
+                      
+                          <!-- Position Column -->
+                          <ng-container matColumnDef="startDate">
+                            <mat-header-cell *matHeaderCellDef> Start Date </mat-header-cell>
+                            <mat-cell *matCellDef="let element">{{element.startDate}}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="finishDate">
+                            <mat-header-cell *matHeaderCellDef> Finish Date </mat-header-cell>
+                            <mat-cell *matCellDef="let element">{{element.finishDate}}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="value">
+                            <mat-header-cell *matHeaderCellDef> Contract Value </mat-header-cell>
+                            <mat-cell *matCellDef="let element">{{element.value}}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="usable">
+                            <mat-header-cell *matHeaderCellDef> Contract Usability </mat-header-cell>
+                            <mat-cell *matCellDef="let element">{{element.usable}}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="actions">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <button mat-raised-button color="primary" (click)="editLocation(element.id)">
+                                    {{element.actions[0]}}
+                                </button>
+                                <button mat-raised-button color="primary" style="margin-left: 3%; font-size: 10px;" (click)="deleteContract(element.id)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </mat-cell>
+                          </ng-container>
+                      
+                          <mat-header-row *matHeaderRowDef="displayedColumns_contracts"></mat-header-row>
+                          <mat-row *matRowDef="let row; columns: displayedColumns_contracts;"></mat-row>
+                        </mat-table>
+                      
+                    </div>      
+				</div>
+                
+			</div>
+        </div>
+    </div>
+    <!-- About Section End -->
+   
+    <section class="section-7">
+        <!-- Footer -->
+        <footer class="page-footer font-small stylish-color-dark">
+ 
+            <!-- Footer Links -->
+            <div class="container text-center text-md-left">
+
+                <!-- Grid row -->
+                <div class="row">
+
+
+                    <hr class="clearfix w-100 d-md-none">
+
+                    <!-- Grid column -->
+                    <div class="col-lg-2 col-sm-4 box-2 mx-auto">
+
+                        <!-- Links -->
+                        
+
+                        
+
+                    </div>
+                    <!-- Grid column -->
+
+                    <hr class="clearfix w-100 d-md-none">
+
+                    <!-- Grid column -->
+                    <div class="col-lg-2 col-sm-4 box-3 mx-auto">
+
+                        <!-- Links -->
+                        <h5 class = "cc">Site Navigation</h5>
+
+                        <ul class="list-unstyled">
+                            <li>
+                                <a class="nav-link" routerLink="/home">go to home</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" routerLink="/team-search">Teams</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" routerLink="/login">log out</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <!-- Grid column -->
+
+                    <hr class="clearfix w-100 d-md-none">
+
+                    <!-- Grid column -->
+                    <div class="col-lg-2 col-sm-4 box-4 mx-auto">
+
+                        <!-- Links -->
+                        
+
+                    </div>
+                    <!-- Grid column -->
+
+                </div>
+                <!-- Grid row -->
+
+            </div>
+            <!-- Footer Links -->
+        </footer>
+        <!-- Footer -->
+    </section>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="js/animate.js"></script>
+    <script src="js/custom.js"></script>
+</body>
+
+</html>
+<style>
+	li, .cc {
+		text-align: center;
+	}
+</style>

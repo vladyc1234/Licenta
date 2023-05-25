@@ -1,0 +1,19 @@
+https://sites.google.com/view/vreaulicentacuradumincu
+
+https://www.g2.com/categories/route-planning/small-business [1]
+
+https://learn.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 [5]
+
+https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-7.0&tabs=visual-studio [6]
+
+https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/actions?view=aspnetcore-7.0 [7]
+
+https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli [8]
+
+https://angular.io/guide/what-is-angular [9]
+
+https://angular.io/guide/architecture-modules [10]
+
+https://angular.io/guide/lazy-loading-ngmodules [11]
+
+https://angular.io/guide/architecture-components [12]

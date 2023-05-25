@@ -1,0 +1,14 @@
+-am mai multe contracte
+-am matrice de distanta care contine distanta si timp
+-indexul matricii contine id-ul contractului si valoarea lui
+
+GANDIRE CU O SINGURA ECHIPA
+
+-folosesc greedy
+-creez functie ca sa aflu care este cea mai apropiata locatie de cea curenta
+-creez functie care calculeaza dupa ruta cea mai scurta
+-prin apropiata iau ca "weight" "pondere" distanta(sau timp)/valoare (cu cat mai aproape de 0 cu atat mai bine)
+ obtin altfel ruta cea mai eficienta pentru a minimiza distanta si a maximiza profitu
+-trebuie sa iau in considerare datele pentru fiecare contract (posibil sa nu pot trece prin toate) 
+ adica verific cea mai apropiata locatie care inca are date valabile (nu a expirat contractu)
+-tin cont de contractele vizitate cu un vector

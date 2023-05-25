@@ -1,0 +1,21 @@
+
+.form-section
+{
+        margin-left: 30%;
+        margin-right: 30%;
+        margin-top: 20%;
+        width: 40%;
+        height: 100%;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+}
+
+::ng-deep html{
+
+	background-image: url('login.jpg');
+	background-size: cover;
+
+}
