@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router }from '@angular/router';
-import { Team, RecipesSearchService } from 'src/app/services/recipes-search.service';
+import { Team, RouteManagerService } from 'src/app/services/route-manager.service';
 import { AbstractControl, AbstractFormGroupDirective, FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -19,7 +19,7 @@ export class TeamSearchComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private teamService: RecipesSearchService,
+    private teamService: RouteManagerService,
   ) { }
 
   dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
@@ -37,10 +37,10 @@ export class TeamSearchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.displayContracts();
+    this.displayTeams();
   }
 
-  public displayContracts(): void{
+  public displayTeams(): void{
 
     const idUser = localStorage.getItem('idUser') || '0';
     this.teamService.GetAllTeamsById(idUser).subscribe(

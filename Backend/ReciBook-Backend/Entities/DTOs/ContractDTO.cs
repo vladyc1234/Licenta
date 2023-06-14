@@ -11,6 +11,7 @@ namespace ReciBook_Backend.Entities.DTOs
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }
         public float Value { get; set; }
+        public string JobType { get; set; }
         public int IdUser { get; set; }
 
         public ContractDTO(Contract contract)
@@ -19,6 +20,7 @@ namespace ReciBook_Backend.Entities.DTOs
             this.StartDate = contract.StartDate;
             this.FinishDate = contract.FinishDate;
             this.Value = contract.Value;
+            this.JobType = contract.JobType;
             this.IdUser = contract.IdUser;
         }
     }

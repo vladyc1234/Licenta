@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router }from '@angular/router';
-import { Employee, RecipesSearchService } from 'src/app/services/recipes-search.service';
+import { Employee, RouteManagerService } from 'src/app/services/route-manager.service';
 import { AbstractControl, AbstractFormGroupDirective, FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -20,7 +20,7 @@ export class EmployeeEditComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private employeeService: RecipesSearchService,
+    private employeeService: RouteManagerService,
   ) { }
 
   dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
@@ -38,10 +38,10 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.displayRecipe();
+    this.displayEmployees();
   }
 
-  public displayRecipe(): void{
+  public displayEmployees(): void{
     let idTeam = localStorage.getItem('idTeam') || '0';
     this.employeeService.GetAllEmployeesById(idTeam).subscribe(
       (result) => {

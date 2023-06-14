@@ -11,6 +11,7 @@ namespace ReciBook_Backend.Entities
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }
         public float Value { get; set; }
+        public string JobType { get; set; }
         public int IdUser { get; set; }
         public virtual User User { get; set; }
         public ICollection<Location> Locations { get; set; }

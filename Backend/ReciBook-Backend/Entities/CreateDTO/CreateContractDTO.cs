@@ -11,6 +11,7 @@ namespace ReciBook_Backend.Entities.CreateDTO
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }
         public float Value { get; set; }
+        public string JobType { get; set; }
         public int IdUser { get; set; }
     }
 }

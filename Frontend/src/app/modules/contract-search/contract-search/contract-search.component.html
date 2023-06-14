@@ -25,7 +25,6 @@
         <div class="container text-white">
             <div class="row">
                 <div class="col-sm-4 col-12 align-self-center box-1 text-center">
-                    <a class="navbar-brand" href="/home"><img alt="RECI-BOOK"></a>
                 </div>
             </div>
             <!--/row-->
@@ -88,6 +87,12 @@
                             </mat-label>
                             <input matInput placeholder="Value" formControlName="value" />
                         </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>
+                                Training level required
+                            </mat-label>
+                            <input matInput placeholder="Specialization" formControlName="jobType" />
+                        </mat-form-field>
                         <button style="height:63px; width:50%;" mat-raised-button (click)="addContract()">
                             Add Contract
                         </button>
@@ -112,6 +117,11 @@
                           <ng-container matColumnDef="value">
                             <mat-header-cell *matHeaderCellDef> Contract Value </mat-header-cell>
                             <mat-cell *matCellDef="let element">{{element.value}}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="jobType">
+                            <mat-header-cell *matHeaderCellDef> Required training</mat-header-cell>
+                            <mat-cell *matCellDef="let element">{{element.jobType}}</mat-cell>
                           </ng-container>
 
                           <ng-container matColumnDef="usable">

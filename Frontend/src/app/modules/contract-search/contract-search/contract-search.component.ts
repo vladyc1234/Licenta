@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router }from '@angular/router';
-import { Contract, RecipesSearchService } from 'src/app/services/recipes-search.service';
+import { Contract, RouteManagerService } from 'src/app/services/route-manager.service';
 import { AbstractControl, AbstractFormGroupDirective, FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -14,12 +14,12 @@ import { MatSnackBar} from '@angular/material/snack-bar';
 })
 export class ContractSearchComponent implements OnInit {
 
-  public displayedColumns_contracts = ['startDate','finishDate','value','usable','actions'];
+  public displayedColumns_contracts = ['startDate','finishDate','value', 'jobType', 'usable','actions'];
   public id = localStorage.getItem('link_id')||'1';
 
   constructor(
     private router: Router,
-    private contractService: RecipesSearchService,
+    private contractService: RouteManagerService,
   ) { }
 
   dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
@@ -48,12 +48,13 @@ export class ContractSearchComponent implements OnInit {
       (result) => {
         for(let i = 0; i<result.length; i++)
         {
-          this.dataSourceC.data[i] = { startDate: new Date(), finishDate: new Date(), value: 0, usable:"No", actions:["Edit"], id: 0};
+          this.dataSourceC.data[i] = { startDate: new Date(), finishDate: new Date(), value: 0, jobType: "", usable:"No", actions:["Edit"], id: 0};
           result[i].startDate = new Date(result[i].startDate);
           result[i].finishDate = new Date(result[i].finishDate);
           this.dataSourceC.data[i].startDate = result[i].startDate.toLocaleDateString('en-US', options);
           this.dataSourceC.data[i].finishDate = result[i].finishDate.toLocaleDateString('en-US', options);
           this.dataSourceC.data[i].value = result[i].value;
+          this.dataSourceC.data[i].jobType = result[i].jobType;
 
           this.contractService.GetAllLocationsById(result[i].id).subscribe(
             (result) => {
@@ -80,7 +81,7 @@ export class ContractSearchComponent implements OnInit {
     let idUser = localStorage.getItem('idUser') || '0';
     if(this.addForm.value.startDate!=null && this.addForm.value.finishDate != null && this.addForm.value.value != null && this.addForm.value.finishDate > this.addForm.value.startDate)
     {
-      let contract = new Contract(this.addForm.value.startDate, this.addForm.value.finishDate, this.addForm.value.value, parseInt(idUser));
+      let contract = new Contract(this.addForm.value.startDate, this.addForm.value.finishDate, this.addForm.value.value, this.addForm.value.jobType, parseInt(idUser));
     
       this.contractService.CreateContract(contract).subscribe(
         data => {
@@ -109,6 +110,7 @@ export class ContractSearchComponent implements OnInit {
     startDate: new FormControl(''),
     finishDate: new FormControl(''),
     value: new FormControl(''),
+    jobType: new FormControl('')
   });
 
   get startDate(){
@@ -119,6 +121,9 @@ export class ContractSearchComponent implements OnInit {
   }
   get value(){
     return this.addForm.get('value');
+  }
+  get jobType(){
+    return this.addForm.get('jobType');
   }
 
   public editLocation(id:string): void{
@@ -136,6 +141,7 @@ export interface Element {
   startDate: Date;
   finishDate: Date;
   value: number;
+  jobType: string;
   usable: string;
   actions: string[];
   id: number;

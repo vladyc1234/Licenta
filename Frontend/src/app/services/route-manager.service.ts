@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class RecipesSearchService {
+export class RouteManagerService {
 
   //PRIMARY TABLE LINKS
 
@@ -115,12 +115,14 @@ export class Contract{
   startDate: Date;
   finishDate: Date;
   value: number;
+  jobType : string;
   idUser: number;
 
-  constructor(startDate: Date, finishDate: Date, value: number, idUser: number){
+  constructor(startDate: Date, finishDate: Date, value: number, jobType : string, idUser: number){
     this.startDate = startDate;
     this.finishDate = finishDate;
     this.value = value;
+    this.jobType = jobType;
     this.idUser = idUser;
   };
 }

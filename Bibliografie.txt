@@ -17,3 +17,25 @@ https://angular.io/guide/architecture-modules [10]
 https://angular.io/guide/lazy-loading-ngmodules [11]
 
 https://angular.io/guide/architecture-components [12]
+
+https://v7.material.angular.io/components/button/overview [13]
+
+https://v5.material.angular.io/components/form-field/overview [14]
+
+https://v5.material.angular.io/components/input/overview [15]
+
+https://v5.material.angular.io/components/table/overview [16]
+
+https://v5.material.angular.io/components/paginator/overview [17]
+
+https://angular.io/api/forms/ReactiveFormsModule?ref=console-log [18]
+
+https://v7.material.angular.io/components/icon/overview [19]
+
+https://angular.io/guide/architecture-services [20]
+
+https://developers.google.com/maps/documentation/javascript/distancematrix [21]
+
+https://developers.google.com/maps/documentation/javascript/directions [22]
+
+https://developers.google.com/maps/documentation/javascript/geocoding [23]

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router }from '@angular/router';
-import { Location, RecipesSearchService } from 'src/app/services/recipes-search.service';
+import { Location, RouteManagerService } from 'src/app/services/route-manager.service';
 import { AbstractControl, AbstractFormGroupDirective, FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -20,7 +20,7 @@ export class LocationEditComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private locationService: RecipesSearchService,
+    private locationService: RouteManagerService,
   ) { }
 
   dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);

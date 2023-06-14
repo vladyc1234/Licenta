@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router }from '@angular/router';
-import { Location, RecipesSearchService } from 'src/app/services/recipes-search.service';
+import { Location, RouteManagerService } from 'src/app/services/route-manager.service';
 import { HttpClient, HttpClientModule, HttpClientJsonpModule } from  '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
 import { } from 'google.maps'; 
@@ -17,23 +17,22 @@ import { Loader } from "@googlemaps/js-api-loader"
 export class HomeComponent implements OnInit {
 
   addressVector: Array<addressLatLng> = [];
-  addressVectorC: Array<addressLatLng> = [];
   distanceMatrix: Array<distanceMatrix> = [];
 
   posStartDate: any = 0;
   startDate: any = 0;
   finishDate: any = 0;
-
+  visitedLocations: Set<number> = new Set();
+  
   loader = new Loader({
     apiKey: "&key=AIzaSyAt6xg7q7ZAivgGRE6oOZKLjjZir-vdyMA",
-    version: "weekly",
+    version: "beta",
   });
   
-
   constructor(
     public http: HttpClient,
     private router: Router,
-    private homeService: RecipesSearchService,
+    private homeService: RouteManagerService,
   ) { 
   }
 
@@ -41,67 +40,12 @@ export class HomeComponent implements OnInit {
     this.geocodeAddress();
   }
 
-
-  // geocodeAddress() {
-  //   const idUser = localStorage.getItem('idUser') || '0';
-  //   this.locationService.GetAllContractsById(idUser).subscribe(
-  //     async contracts => {
-  //       for(let i = 0; i < contracts.length; i++)
-  //       {
-  //         this.locationService.GetAllLocationsById(contracts[i].id).subscribe(
-  //           async locations => {
-  //             for(let j = 0; j < locations.length; j++)
-  //             {
-  //               let url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + locations[j].address + '%' + locations[j].city + '&key=AIzaSyAt6xg7q7ZAivgGRE6oOZKLjjZir-vdyMA'; 
-  //               // this.http.get(url).subscribe(
-  //               //   (result: any) => {
-  //               //     let latitude = result['results'][0]['geometry']['location']['lat'];
-  //               //     let longitude = result['results'][0]['geometry']['location']['lng'];
-  //               //     let location: Array<number[]> = [];
-  //               //     location.push([latitude, longitude]);
-  //               //     this.addressVector.push({idContract: contracts[i].id, location: location, value: contracts[i].value});
-
-                    
-  //               //   }
-  //               // )
-  //               const result: any = await this.http.get(url).toPromise();
-  //               let latitude = result['results'][0]['geometry']['location']['lat'];
-  //               let longitude = result['results'][0]['geometry']['location']['lng'];
-  //               let location: Array<number[]> = [];
-  //               location.push([latitude, longitude]);
-  //               this.addressVector.push({idContract: contracts[i].id, location: location, value: contracts[i].value});
-  //               console.log(this.addressVector)
-  //             }
-  //           }
-  //         )
-  //       }
-  //     }
-  //   )
-    
-  // }
-
   async geocodeAddress() {
     const idUser = localStorage.getItem('idUser') || '0';
     var contracts = await this.homeService.GetAllContractsById(idUser).toPromise() 
 
-    this.startDate = new Date(contracts[0].startDate);
-    this.finishDate = new Date(contracts[0].finishDate)
-
     for(let i = 0; i < contracts.length; i++) 
     {
-      
-      let contractStartDate = new Date(contracts[i].startDate);
-      let contractFinishDate = new Date(contracts[i].finishDate);
-        
-      if(contractStartDate < this.startDate)
-      {
-        this.startDate = contracts[i].startDate;
-        this.posStartDate = i;
-      }
-      if(contractFinishDate > this.finishDate) 
-      {
-        this.finishDate = contractFinishDate;
-      }
       
       var locations: any = await this.homeService.GetAllLocationsById(contracts[i].id).toPromise()
       for(let j = 0; j < locations.length; j++)
@@ -113,21 +57,39 @@ export class HomeComponent implements OnInit {
         let locationName = result['results'][0]['formatted_address'];
         let location: Array<number[]> = [];
         location.push([latitude, longitude]);
-        this.addressVector.push({idContract: contracts[i].id, startDate: contracts[i].startDate, finishDate: contracts[i].finishDate, locationNames: locationName, location: location, value: contracts[i].value});
-        
+
+        let usable = 0;
+        this.homeService.GetAllLocationsById(contracts[i].id).subscribe(
+          (result) => {
+            
+            if(result.length != 0)
+            {
+              usable = 1;
+            }
+
+            if(usable == 1)
+            {
+              this.addressVector.push({idContract: contracts[i].id, startDate: contracts[i].startDate, finishDate: contracts[i].finishDate, locationNames: locationName, location: location, value: contracts[i].value, type: contracts[i].jobType});
+            }
+          })
       }
     }
 
-    
     this.loader.load().then(() => {
       this.generateDistanceMatrix();
     });
 
-    
-
 }
 
 async generateDistanceMatrix() {
+
+    const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+    const matrix = new google.maps.DistanceMatrixService();
+    let directionsService = new google.maps.DirectionsService();
+    let geocoder = new google.maps.Geocoder();
+
+    const container : any = document.getElementById('mapContainer');
+
     var destinations: Array<google.maps.LatLng> = [];
     var origins: Array<google.maps.LatLng> = [];
 
@@ -140,9 +102,7 @@ async generateDistanceMatrix() {
       }
     }
     
-    const matrix = new google.maps.DistanceMatrixService();
-    
-    return await new Promise((resolve, reject)=>{
+    return await new Promise(()=>{
       matrix.getDistanceMatrix({
       origins: destinations,
       destinations: origins,
@@ -158,9 +118,214 @@ async generateDistanceMatrix() {
             }
             this.distanceMatrix[i] = {locations: this.addressVector[i], elements: matrixRow};
           }
-          console.log(this.distanceMatrix)
-          const fastestRoute = this.calculateFastestRoute();
-          console.log(fastestRoute)
+
+          const idUser = localStorage.getItem('idUser') || '0';
+          this.homeService.GetAllTeamsById(idUser).subscribe(
+            (teams) => {
+
+              for(let teamIndex = 0; teamIndex < teams.length; teamIndex++)
+              {
+
+                this.startDate = new Date(this.addressVector[0].startDate);
+                this.startDate = new Date(9999, 12, 30);
+                this.finishDate = new Date(this.addressVector[0].finishDate);
+                for(let i = 0; i < this.addressVector.length; i++)
+                {
+                  let contractStartDate = new Date(this.addressVector[i].startDate);
+                  let contractFinishDate = new Date(this.addressVector[i].finishDate);
+
+                  if(teams[teamIndex].jobType == "Special" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type == "special")
+                  {
+                    this.startDate = new Date(this.addressVector[i].startDate);
+                    this.posStartDate = i;
+                  }
+                  
+                  if(teams[teamIndex].jobType == "General" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type != "special")
+                  {
+                    this.startDate = new Date(this.addressVector[i].startDate);
+                    this.posStartDate = i;
+                  }
+                    
+                  if(contractFinishDate >= this.finishDate && !this.visitedLocations.has(i))
+                  {
+                    this.finishDate = this.addressVector[i].finishDate;
+                  }
+                }
+
+                if(this.visitedLocations.has(this.posStartDate))
+                {
+                  for(let i = 0; i < this.addressVector.length; i++)
+                  {
+                    let contractStartDate = new Date(this.addressVector[i].startDate);
+                    let contractFinishDate = new Date(this.addressVector[i].finishDate);
+
+                    if(contractStartDate <= this.startDate && !this.visitedLocations.has(i))
+                    {
+                      this.startDate = new Date(this.addressVector[i].startDate);
+                      this.posStartDate = i;
+                    }
+
+                  }
+                }
+
+                this.visitedLocations.add(this.posStartDate);
+
+                const fastestRoute = this.calculateFastestRoute(teams[teamIndex].jobType);
+                console.log(fastestRoute)
+                
+                let value = 0;
+
+                for(let routeIndex = 0; routeIndex < fastestRoute.length - 1; routeIndex++)
+                {
+                  value = value + this.distanceMatrix[fastestRoute[routeIndex]].locations.value
+                }
+
+                const containerAll = document.createElement('div');
+                const stylesContainer = `
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center; 
+                  align-items: center;
+                `;
+                containerAll.setAttribute('style', stylesContainer);
+                container.appendChild(containerAll);
+
+                const newDiv = document.createElement('div');
+                const styles = `
+                    height: 400px; 
+                    width: 70%; 
+                    margin-bottom: 5%;
+                    margin-right: 5%;
+                    border: 3px solid black;
+                `;
+                newDiv.setAttribute('style', styles);
+                containerAll.appendChild(newDiv);
+
+                const containerInfo = document.createElement('div');
+                containerAll.appendChild(containerInfo);
+
+                const team = document.createElement('div');
+                team.textContent = "Team " + teamIndex.toString() + " with the training level: " + teams[teamIndex].jobType.toLocaleLowerCase();
+                const stylesTeam = `
+                    margin-bottom: 3%;
+                `;
+                team.setAttribute('style', stylesTeam);
+                containerInfo.appendChild(team);
+
+                const profit = document.createElement('div');
+                profit.textContent = "The projected value of this route is equal to: " + value.toString();
+                const stylesProfit = `
+                    margin-bottom: 3%;
+                `;
+                profit.setAttribute('style', stylesProfit);
+                containerInfo.appendChild(profit);
+
+                const route = document.createElement('div');
+                route.textContent = "The route goes trough the following locations: ";
+                const stylesRoute = `
+                    margin-bottom: 3%;
+                `;
+                route.setAttribute('style', stylesRoute);
+                containerInfo.appendChild(route);
+
+                for(let routePoint = 0; routePoint < fastestRoute.length - 1; routePoint++)
+                {
+                  const location = document.createElement('div');
+                  location.textContent = this.distanceMatrix[fastestRoute[routePoint]].locations.locationNames + 
+                  " (Contract " + this.distanceMatrix[fastestRoute[routePoint]].locations.idContract + 
+                  ", type " + this.distanceMatrix[fastestRoute[routePoint]].locations.type.toLocaleLowerCase() + " )";
+              
+                  const stylesLocation = `
+                    margin-bottom: 1%;
+                    font-size: 14px;
+                  `;
+                  location.setAttribute('style', stylesLocation);
+                  containerInfo.appendChild(location);
+                }
+
+                let directionsRenderer = new google.maps.DirectionsRenderer();
+                
+                geocoder.geocode( { 'address': this.distanceMatrix[fastestRoute[0]].locations.locationNames}, (results : any, status) => {
+                  if (status == 'OK') {
+                    let map = new Map(
+                      newDiv as HTMLElement,
+                      {
+                        zoom: 4,
+                        center: results[0].geometry.location,
+                      }
+                    );
+    
+                    directionsRenderer.setMap(map);
+                  }
+                });
+
+                let waypoints = []
+
+                for(let routeIndex = 1; routeIndex < fastestRoute.length - 1; routeIndex++)
+                {
+                  let stop = {location: this.distanceMatrix[fastestRoute[routeIndex]].locations.locationNames, stopover: true}
+                  waypoints.push(stop)
+                }
+                
+                if (fastestRoute.length == 2)
+                {
+                  directionsService.route(
+                    {
+                      origin: this.distanceMatrix[fastestRoute[0]].locations.locationNames,
+                      destination: this.distanceMatrix[fastestRoute[0]].locations.locationNames,
+                      provideRouteAlternatives: false,
+                      travelMode: google.maps.TravelMode["DRIVING"],
+                      drivingOptions: {
+                        departureTime: new Date(),
+                        trafficModel: google.maps.TrafficModel["PESSIMISTIC"]
+                      },
+                    }, (result) => {
+                    if (1) {
+                      directionsRenderer.setDirections(result);
+                    }
+                  });
+                }
+                else if (fastestRoute.length == 3)
+                {
+                  directionsService.route(
+                    {
+                      origin: this.distanceMatrix[fastestRoute[0]].locations.locationNames,
+                      destination: this.distanceMatrix[fastestRoute[1]].locations.locationNames,
+                      provideRouteAlternatives: false,
+                      travelMode: google.maps.TravelMode["DRIVING"],
+                      drivingOptions: {
+                        departureTime: new Date(),
+                        trafficModel: google.maps.TrafficModel["PESSIMISTIC"]
+                      },
+                    }, (result) => {
+                    if (1) {
+                      directionsRenderer.setDirections(result);
+                    }
+                  });
+                }
+                else 
+                {
+                  directionsService.route(
+                    {
+                      origin: this.distanceMatrix[fastestRoute[0]].locations.locationNames,
+                      destination: this.distanceMatrix[fastestRoute[fastestRoute.length - 2]].locations.locationNames,
+                      waypoints: waypoints,
+                      provideRouteAlternatives: false,
+                      travelMode: google.maps.TravelMode["DRIVING"],
+                      drivingOptions: {
+                        departureTime: new Date(),
+                        trafficModel: google.maps.TrafficModel["PESSIMISTIC"]
+                      },
+                    }, (result) => {
+                    if (1) {
+                      directionsRenderer.setDirections(result);
+                    }
+                  });
+                }
+
+              }
+
+            })
         }
       });
     })
@@ -169,68 +334,62 @@ async generateDistanceMatrix() {
     
   }
 
-  // getStartingAndFinishDateContracts(): any[] {
-  //   let dates: any[];
-  //   let posStartDate = 0;
-  //   let posFinishDate = 0;
-  //   let finishDate = new Date(2000, 1, 1);
-  //   const idUser = localStorage.getItem('idUser') || '0';
-  //   this.homeService.GetAllContractsById(idUser).subscribe(
-  //     (contracts) => {
-  //       let startDate = new Date(contracts[0].startDate);
-  //       let finishDate = new Date(contracts[0].finishDate);
-  //       for(let i = 0; i < contracts.length; i++)
-  //       {
-  //         let contractStartDate = new Date(contracts[i].startDate);
-  //         let contractFinishDate = new Date(contracts[i].finishDate);
-          
-  //         if(contractStartDate < startDate)
-  //         {
-  //           startDate = contracts[i].startDate;
-  //           posStartDate = i;
-  //         }
-  //         if(contractFinishDate > finishDate)
-  //         {
-  //           finishDate = contracts[i].finishDate;
-  //           posFinishDate = i;
-  //           console.log(posFinishDate)
-  //         }
-  //       }
-  //       dates = [posStartDate, posFinishDate]
-  //       return dates;
-  //     })
-  
-    
-  // }
-
-  // find the index of the closest unvisited location to the given location
-  findClosest(locationIndex: number, visited: Set<number>): number {
+  findClosest(locationIndex: number, visited: Set<number>, teamType: string): number {
     let minDistance = Infinity;
     let closestIndex = -1;
+    let specialActive = 0;
     
     for (let i = 0; i < this.distanceMatrix.length; i++) {
-      if (!visited.has(i) && locationIndex != i) {
+
+      if (!visited.has(i) && locationIndex != i && this.distanceMatrix[i].locations.startDate >= this.distanceMatrix[locationIndex].locations.finishDate && teamType.toLocaleLowerCase() == "special" && this.distanceMatrix[i].locations.type.toLocaleLowerCase() == "special") {
         let distance = this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value;
+        specialActive = 1;
+
         if (distance < minDistance) {
           minDistance = distance;
           closestIndex = i;
         }
       }
+      if (!visited.has(i) && locationIndex != i && this.distanceMatrix[i].locations.startDate >= this.distanceMatrix[locationIndex].locations.finishDate && specialActive == 0) {
+        let distance = this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value;
+
+        if (teamType.toLocaleLowerCase() == "general" && this.distanceMatrix[i].locations.type.toLocaleLowerCase() != "special")
+        {
+          if (distance < minDistance) {
+            console.log(i)
+            minDistance = distance;
+            closestIndex = i;
+          }
+        } 
+        else 
+        {
+          if (distance < minDistance && teamType.toLocaleLowerCase() == "special") {
+            minDistance = distance;
+            closestIndex = i;
+          }
+        }
+          
+      }
     }
     return closestIndex;
   }
 
-  // calculate the fastest route using a greedy approach
-  calculateFastestRoute(): number[] {
+  calculateFastestRoute(teamType : string): number[] {
     const route: number[] = [this.posStartDate];
-    const visited: Set<number> = new Set([this.posStartDate]);
-    let currentDate = new Date(this.distanceMatrix[route[route.length - 1]].locations.finishDate)
-    let finishDate = new Date(this.finishDate)
-    while (currentDate.getDate() != finishDate.getDate() && currentDate.getDay() != finishDate.getDay() && currentDate.getFullYear() == finishDate.getFullYear()) {
+    let currentDate = new Date(this.distanceMatrix[route[route.length - 1]].locations.finishDate);
+    let finishDate = new Date(this.finishDate);
+
+    while (1) {
       const currentLocation = route[route.length - 1];
-      const closestLocation = this.findClosest(currentLocation, visited);
+      const closestLocation = this.findClosest(currentLocation, this.visitedLocations, teamType);
       route.push(closestLocation);
-      visited.add(closestLocation);
+
+      if(route[route.length - 1] == -1)
+      {
+        break;
+      }
+
+      this.visitedLocations.add(closestLocation);
       currentDate = new Date(this.distanceMatrix[route[route.length - 1]].locations.finishDate)
     }
     return route;
@@ -245,6 +404,7 @@ export interface addressLatLng {
   locationNames: string;
   location: Array<number[]>;
   value: number;
+  type: string;
 }
 
 export interface matrixElement {

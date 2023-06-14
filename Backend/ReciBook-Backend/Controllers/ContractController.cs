@@ -87,6 +87,7 @@ namespace ReciBook_Backend.Controllers
             newContract.StartDate = dto.StartDate;
             newContract.FinishDate = dto.FinishDate;
             newContract.Value = dto.Value;
+            newContract.JobType = dto.JobType;
             newContract.IdUser = dto.IdUser;
 
             _repository.Create(newContract);
