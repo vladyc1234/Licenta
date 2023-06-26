@@ -134,13 +134,15 @@ async generateDistanceMatrix() {
                   let contractStartDate = new Date(this.addressVector[i].startDate);
                   let contractFinishDate = new Date(this.addressVector[i].finishDate);
 
-                  if(teams[teamIndex].jobType == "Special" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type == "special")
+                  console.log(teams[teamIndex].jobType)
+
+                  if(teams[teamIndex].jobType.toLocaleLowerCase() == "special" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type.toLocaleLowerCase() == "special")
                   {
                     this.startDate = new Date(this.addressVector[i].startDate);
                     this.posStartDate = i;
                   }
                   
-                  if(teams[teamIndex].jobType == "General" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type != "special")
+                  if(teams[teamIndex].jobType.toLocaleLowerCase() == "general" && contractStartDate < this.startDate && !this.visitedLocations.has(i) && this.distanceMatrix[i].locations.type.toLocaleLowerCase() != "special")
                   {
                     this.startDate = new Date(this.addressVector[i].startDate);
                     this.posStartDate = i;
@@ -356,7 +358,6 @@ async generateDistanceMatrix() {
         if (teamType.toLocaleLowerCase() == "general" && this.distanceMatrix[i].locations.type.toLocaleLowerCase() != "special")
         {
           if (distance < minDistance) {
-            console.log(i)
             minDistance = distance;
             closestIndex = i;
           }
