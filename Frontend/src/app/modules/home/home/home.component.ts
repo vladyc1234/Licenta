@@ -171,7 +171,7 @@ async generateDistanceMatrix() {
                 }
 
                 this.visitedLocations.add(this.posStartDate);
-
+                
                 const fastestRoute = this.calculateFastestRoute(teams[teamIndex].jobType);
                 console.log(fastestRoute)
                 
@@ -340,11 +340,14 @@ async generateDistanceMatrix() {
     let minDistance = Infinity;
     let closestIndex = -1;
     let specialActive = 0;
-    
+    console.log(this.visitedLocations)
     for (let i = 0; i < this.distanceMatrix.length; i++) {
-
+      let startDate = new Date(this.distanceMatrix[i].locations.startDate)
+      let finishDate = new Date(this.distanceMatrix[i].locations.finishDate)
+      console.log((this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value) * (startDate.getTime() + finishDate.getTime()))
       if (!visited.has(i) && locationIndex != i && this.distanceMatrix[i].locations.startDate >= this.distanceMatrix[locationIndex].locations.finishDate && teamType.toLocaleLowerCase() == "special" && this.distanceMatrix[i].locations.type.toLocaleLowerCase() == "special") {
-        let distance = this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value;
+        let distance = (this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value) + (startDate.getTime() + finishDate.getTime()) / 10000;
+
         specialActive = 1;
 
         if (distance < minDistance) {
@@ -353,7 +356,7 @@ async generateDistanceMatrix() {
         }
       }
       if (!visited.has(i) && locationIndex != i && this.distanceMatrix[i].locations.startDate >= this.distanceMatrix[locationIndex].locations.finishDate && specialActive == 0) {
-        let distance = this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value;
+        let distance = (this.distanceMatrix[locationIndex].elements[i].distance / this.distanceMatrix[i].locations.value) + (startDate.getTime() + finishDate.getTime()) / 10000;
 
         if (teamType.toLocaleLowerCase() == "general" && this.distanceMatrix[i].locations.type.toLocaleLowerCase() != "special")
         {
